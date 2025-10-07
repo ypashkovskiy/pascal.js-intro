@@ -5,6 +5,7 @@ import { Division } from '../SyntaxAnalyzer/Tree/Division';
 import { NumberConstant } from '../SyntaxAnalyzer/Tree/NumberConstant';
 import { NumberVariable } from './Variables/NumberVariable';
 import { TreeNodeBase } from '../SyntaxAnalyzer/Tree/TreeNodeBase';
+import { UnaryMinus } from '../SyntaxAnalyzer/Tree/UnaryMinus';
 
 export class Engine {
     /**
@@ -75,9 +76,25 @@ export class Engine {
 
             return new NumberVariable(result);
         } else {
-            return this.evaluateMultiplier(expression);
+            return this.unary_Mynus(expression);
         }
     }
+
+    unary_Mynus(expression: TreeNodeBase) {
+        if (expression instanceof UnaryMinus ) {
+           
+          let   OneOperator = this.unary_Mynus (expression.right);
+          let   result = -OneOperator.value; 
+            return new NumberVariable (result);
+
+        }   
+        else {
+
+            return this.evaluateMultiplier(expression);
+        }   
+    }    
+   
+
 
     evaluateMultiplier(expression: TreeNodeBase) {
         if (expression instanceof NumberConstant) {

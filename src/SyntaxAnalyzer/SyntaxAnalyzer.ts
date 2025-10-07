@@ -8,6 +8,7 @@ import { LexicalAnalyzer } from '../LexicalAnalyzer/LexicalAnalyzer';
 import { TreeNodeBase } from './Tree/TreeNodeBase';
 import { SymbolBase } from '../LexicalAnalyzer/Symbols/SymbolBase';
 import { BinaryOperation } from './Tree/BinaryOperation';
+import { UnaryMinus } from  './Tree/UnaryMinus';
 
 /**
  * Синтаксический анализатор - отвечает за построение синтаксического дерева
@@ -125,14 +126,69 @@ export class SyntaxAnalyzer {
         return multiplier;
     }
 
+    // Унарный минус (в том числе и множественный)
+
+    MultipleUnaryMinus(){
+       let unary_minus: SymbolBase;
+       let  multip: TreeNodeBase;
+       
+       
+           unary_minus =  this.symbol; 
+            
+           this.nextSym();
+
+           
+
+           
+           if (this.symbol.stringValue ==  SymbolsCodes.minus){
+
+            
+            return  new UnaryMinus (unary_minus, this.MultipleUnaryMinus() );
+            
+           }
+           else {
+            let integerConstant: SymbolBase | null = this.symbol;
+
+            this.accept(SymbolsCodes.integerConst); 
+
+              multip = new NumberConstant(integerConstant);
+              return  new UnaryMinus (unary_minus, multip );
+             
+           }
+               
+          
+          
+        }  
+
+    
+
+
+
     /**
      *  Разбор "множителя"
      */
     scanMultiplier(): NumberConstant {
+       
+       let unary_minus: SymbolBase;
+       let  multip: TreeNodeBase;
+       
+       if (this.symbol.stringValue ==  SymbolsCodes.minus)  {
+
+           multip = this.MultipleUnaryMinus();
+
+           return multip ;
+         
+       } 
+       else {
         let integerConstant: SymbolBase | null = this.symbol;
 
         this.accept(SymbolsCodes.integerConst); // проверим, что текущий символ это именно константа, а не что-то еще
 
         return new NumberConstant(integerConstant);
+       }
+
+       
+
+        
     }
 };
