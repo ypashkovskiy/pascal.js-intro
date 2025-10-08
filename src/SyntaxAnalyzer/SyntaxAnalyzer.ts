@@ -147,12 +147,8 @@ export class SyntaxAnalyzer {
             
            }
            else {
-            let integerConstant: SymbolBase | null = this.symbol;
-
-            this.accept(SymbolsCodes.integerConst); 
-
-              multip = new NumberConstant(integerConstant);
-              return  new UnaryMinus (unary_minus, multip );
+            
+              return  new UnaryMinus (unary_minus, this.WritingNumber());
              
            }
                
@@ -160,7 +156,14 @@ export class SyntaxAnalyzer {
           
         }  
 
-    
+    WritingNumber () {
+        let integerConstant: SymbolBase | null = this.symbol;
+
+        this.accept(SymbolsCodes.integerConst); // проверим, что текущий символ это именно константа, а не что-то еще
+
+        return new NumberConstant(integerConstant);
+
+    }
 
 
 
@@ -172,19 +175,14 @@ export class SyntaxAnalyzer {
        let unary_minus: SymbolBase;
        let  multip: TreeNodeBase;
        
-       if (this.symbol.stringValue ==  SymbolsCodes.minus)  {
+       if ((this.symbol !== null)&&(this.symbol.stringValue ==  SymbolsCodes.minus) ) {
 
-           multip = this.MultipleUnaryMinus();
-
-           return multip ;
-         
+           return this.MultipleUnaryMinus();
+             
        } 
-       else {
-        let integerConstant: SymbolBase | null = this.symbol;
+       else { 
 
-        this.accept(SymbolsCodes.integerConst); // проверим, что текущий символ это именно константа, а не что-то еще
-
-        return new NumberConstant(integerConstant);
+        return this.WritingNumber();
        }
 
        
