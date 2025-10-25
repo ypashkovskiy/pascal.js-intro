@@ -9,6 +9,7 @@ import { TreeNodeBase } from './Tree/TreeNodeBase';
 import { SymbolBase } from '../LexicalAnalyzer/Symbols/SymbolBase';
 import { BinaryOperation } from './Tree/BinaryOperation';
 import { UnaryMinus } from  './Tree/UnaryMinus';
+import { ParenthesesExpression } from  './Tree/ParenthesesExpression';
 
 /**
  * Синтаксический анализатор - отвечает за построение синтаксического дерева
@@ -138,7 +139,11 @@ export class SyntaxAnalyzer {
            this.nextSym();
 
            
+           if (this.symbol.stringValue ==  SymbolsCodes.leftParenthesis) {
 
+              return  new UnaryMinus (unary_minus, this.parenthesesExpression());
+
+           } else
            
            if (this.symbol.stringValue ==  SymbolsCodes.minus){
 
@@ -167,20 +172,44 @@ export class SyntaxAnalyzer {
 
 
 
+    parenthesesExpression(){
+     let  multiplier: TreeNodeBase;
+
+           this.nextSym();
+
+           multiplier = new ParenthesesExpression (null, this.scanExpression());
+          
+           if (this.symbol !== null){
+              this.accept(this.symbol.symbolCode);
+           }else{
+              this.accept(SymbolsCodes.rightParenthesis); 
+           }
+                 
+   
+           return  multiplier;
+
+    }
+
+
     /**
      *  Разбор "множителя"
      */
     scanMultiplier(): NumberConstant {
+              
        
-       let unary_minus: SymbolBase;
-       let  multip: TreeNodeBase;
        
        if ((this.symbol !== null)&&(this.symbol.stringValue ==  SymbolsCodes.minus) ) {
 
            return this.MultipleUnaryMinus();
              
-       } 
-       else { 
+       } else if ((this.symbol !== null)&&(this.symbol.stringValue ==  SymbolsCodes.leftParenthesis) ) {
+        
+           
+             return  this.parenthesesExpression()
+         
+           
+      
+        } else { 
 
         return this.WritingNumber();
        }

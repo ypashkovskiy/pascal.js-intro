@@ -6,6 +6,7 @@ import { NumberConstant } from '../SyntaxAnalyzer/Tree/NumberConstant';
 import { NumberVariable } from './Variables/NumberVariable';
 import { TreeNodeBase } from '../SyntaxAnalyzer/Tree/TreeNodeBase';
 import { UnaryMinus } from '../SyntaxAnalyzer/Tree/UnaryMinus';
+import { ParenthesesExpression } from '../SyntaxAnalyzer/Tree/ParenthesesExpression';
 
 export class Engine {
     /**
@@ -56,7 +57,13 @@ export class Engine {
 
             return new NumberVariable(result as number);
 
-        } else {
+        } else if (expression instanceof ParenthesesExpression ) {
+
+          return this.evaluateSimpleExpression(expression.Parentheses);
+       
+        } 
+
+         else {
             return this.evaluateTerm(expression);
         }
     }
@@ -75,7 +82,14 @@ export class Engine {
             let result = leftOperand.value / rightOperand.value;
 
             return new NumberVariable(result);
-        } else {
+
+        }else if (expression instanceof ParenthesesExpression ) {
+
+          return this.evaluateSimpleExpression(expression.Parentheses);
+       
+        }
+        
+         else {
             return this.unary_Mynus(expression);
         }
     }
@@ -87,8 +101,12 @@ export class Engine {
           let   result = -OneOperator.value; 
             return new NumberVariable (result);
 
-        }   
-        else {
+        } else if (expression instanceof ParenthesesExpression ) {
+
+          return this.evaluateSimpleExpression(expression.Parentheses);
+       
+        }
+         else {
 
             return this.evaluateMultiplier(expression);
         }   
