@@ -56,11 +56,6 @@ export class Engine {
             }
 
             return new NumberVariable(result as number);
-
-        } else if (expression instanceof ParenthesesExpression ) {
-
-          return this.evaluateSimpleExpression(expression.Parentheses);
-       
         } 
 
          else {
@@ -83,39 +78,28 @@ export class Engine {
 
             return new NumberVariable(result);
 
-        }else if (expression instanceof ParenthesesExpression ) {
-
-          return this.evaluateSimpleExpression(expression.Parentheses);
-       
         }
         
          else {
-            return this.unary_Mynus(expression);
+            return this.evaluateMultiplier(expression);
         }
     }
 
-    unary_Mynus(expression: TreeNodeBase) {
-        if (expression instanceof UnaryMinus ) {
-           
-          let   OneOperator = this.unary_Mynus (expression.right);
-          let   result = -OneOperator.value; 
-            return new NumberVariable (result);
+   evaluateMultiplier(expression: TreeNodeBase) {
 
-        } else if (expression instanceof ParenthesesExpression ) {
+        if (expression instanceof ParenthesesExpression ) {
 
           return this.evaluateSimpleExpression(expression.Parentheses);
-       
-        }
-         else {
 
-            return this.evaluateMultiplier(expression);
-        }   
-    }    
-   
-
-
-    evaluateMultiplier(expression: TreeNodeBase) {
-        if (expression instanceof NumberConstant) {
+        } else if (expression instanceof UnaryMinus ) {
+           
+          let   OneOperator = this.evaluateMultiplier (expression.right);
+          let   result = -OneOperator.value; 
+            return new NumberVariable (result);
+      }     
+        
+        else
+          if (expression instanceof NumberConstant) {
             return new NumberVariable(expression.symbol.value);
         } else {
             throw 'Number Constant expected.';

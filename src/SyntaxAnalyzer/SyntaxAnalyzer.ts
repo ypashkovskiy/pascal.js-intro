@@ -139,11 +139,11 @@ export class SyntaxAnalyzer {
            this.nextSym();
 
            
-           if (this.symbol.stringValue ==  SymbolsCodes.leftParenthesis) {
+         
 
-              return  new UnaryMinus (unary_minus, this.parenthesesExpression());
+             
 
-           } else
+           
            
            if (this.symbol.stringValue ==  SymbolsCodes.minus){
 
@@ -151,10 +151,12 @@ export class SyntaxAnalyzer {
             return  new UnaryMinus (unary_minus, this.MultipleUnaryMinus() );
             
            }
-           else {
+           else if (this.symbol.stringValue == "int")  {
             
               return  new UnaryMinus (unary_minus, this.WritingNumber());
              
+           } else {
+              return  new UnaryMinus (unary_minus, this.scanMultiplier());
            }
                
           
@@ -179,11 +181,8 @@ export class SyntaxAnalyzer {
 
            multiplier = new ParenthesesExpression (null, this.scanExpression());
           
-           if (this.symbol !== null){
-              this.accept(this.symbol.symbolCode);
-           }else{
-              this.accept(SymbolsCodes.rightParenthesis); 
-           }
+           this.accept(SymbolsCodes.rightParenthesis); 
+         
                  
    
            return  multiplier;
