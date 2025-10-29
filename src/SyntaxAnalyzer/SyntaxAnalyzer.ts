@@ -131,32 +131,27 @@ export class SyntaxAnalyzer {
 
     MultipleUnaryMinus(){
        let unary_minus: SymbolBase;
-       let  multip: TreeNodeBase;
-       
+         
        
            unary_minus =  this.symbol; 
             
            this.nextSym();
 
-           
-         
-
-             
-
-           
-           
-           if (this.symbol.stringValue ==  SymbolsCodes.minus){
+            
+           if ((this.symbol !== null)&&(this.symbol.stringValue ==  SymbolsCodes.minus)){
 
             
             return  new UnaryMinus (unary_minus, this.MultipleUnaryMinus() );
             
            }
-           else if (this.symbol.stringValue == "int")  {
+           else if ((this.symbol !== null)&&(this.symbol.stringValue == "int"))  {
             
               return  new UnaryMinus (unary_minus, this.WritingNumber());
              
-           } else {
+           } else if ((this.symbol !== null)&& (this.symbol.stringValue == SymbolsCodes.leftParenthesis)){
               return  new UnaryMinus (unary_minus, this.scanMultiplier());
+           } else {
+               this.accept(SymbolsCodes.integerConst);
            }
                
           
