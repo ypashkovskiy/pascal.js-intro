@@ -47,6 +47,10 @@ export class LexicalAnalyzer {
             && regExp.exec(this.char) !== null) {
             this.currentWord += this.char;
             this.char = this.fileIO.nextCh();
+
+            if ((Number.isFinite(parseInt(this.currentWord)))==false){
+                break;
+            }
         }
     }
 
@@ -99,7 +103,11 @@ export class LexicalAnalyzer {
 
                 case ')':
                     this.char = this.fileIO.nextCh();
-                    return this.getSymbol(SymbolsCodes.rightParenthesis);        
+                    return this.getSymbol(SymbolsCodes.rightParenthesis);   
+
+                 case '=':
+                    this.char = this.fileIO.nextCh();
+                    return this.getSymbol(SymbolsCodes.Equals);          
             }
         }
         throw `Inadmissible symbol:${this.char}.`;

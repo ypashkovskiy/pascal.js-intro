@@ -3,6 +3,7 @@ export enum SymbolsCodes {
     minus = '-',
     star = '*',
     slash = '/',
+    Equals = "=",
     leftParenthesis = '(',
     rightParenthesis = ')',
     identifier = 'ident',

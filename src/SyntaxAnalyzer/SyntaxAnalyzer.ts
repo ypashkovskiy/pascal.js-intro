@@ -2,7 +2,9 @@ import { Multiplication } from './Tree/Multiplication';
 import { Division } from './Tree/Division';
 import { Addition } from './Tree/Addition';
 import { Subtraction } from './Tree/Subtraction';
+import { VariableExpression } from './Tree/VariableExpression';
 import { NumberConstant } from './Tree/NumberConstant';
+import { Variables } from './Tree/Variables';
 import { SymbolsCodes } from '../LexicalAnalyzer/SymbolsCodes';
 import { LexicalAnalyzer } from '../LexicalAnalyzer/LexicalAnalyzer';
 import { TreeNodeBase } from './Tree/TreeNodeBase';
@@ -11,6 +13,7 @@ import { BinaryOperation } from './Tree/BinaryOperation';
 import { UnaryMinus } from  './Tree/UnaryMinus';
 import { ParenthesesExpression } from  './Tree/ParenthesesExpression';
 
+
 /**
  * Синтаксический анализатор - отвечает за построение синтаксического дерева
  */
@@ -18,6 +21,8 @@ export class SyntaxAnalyzer {
 
     lexicalAnalyzer: LexicalAnalyzer;
     symbol: SymbolBase | null;
+   
+    
 
     /**
      * Деревья, которые будут построены (например, для каждой строки исходного кода)
@@ -28,7 +33,7 @@ export class SyntaxAnalyzer {
         this.lexicalAnalyzer = lexicalAnalyzer;
         this.symbol = null;
         this.trees = [];
-    }
+     }
 
     /**
      * Перемещаемся по последовательности "символов" лексического анализатора,
@@ -93,6 +98,23 @@ export class SyntaxAnalyzer {
                     break;
             }
         }
+        
+        while (this.symbol !== null && (
+            this.symbol.symbolCode === SymbolsCodes.Equals )) {
+
+             const variableSymbolsRegExp = /\w/i; 
+
+              let result = this.lexicalAnalyzer.fileIO.lastCh();
+
+             if ((variableSymbolsRegExp.exec(result[1])!== null)&&((result[2]==" ")||(result[2]=="\n")||(result[2]=="="))){ 
+
+                operationSymbol = this.symbol;
+                this.nextSym();
+                let secondExpression: TreeNodeBase = this.scanExpression();
+                term = new VariableExpression (operationSymbol, term, secondExpression);
+             } else
+                this.accept(SymbolsCodes.endOfLine);
+       }
 
         return term;
     }
@@ -124,6 +146,7 @@ export class SyntaxAnalyzer {
             }
         }
 
+
         return multiplier;
     }
 
@@ -146,7 +169,7 @@ export class SyntaxAnalyzer {
            }
            else if ((this.symbol !== null)&&(this.symbol.stringValue == "int"))  {
             
-              return  new UnaryMinus (unary_minus, this.WritingNumber());
+              return  new UnaryMinus (unary_minus, this. WritingNumberVariables());
              
            } else if ((this.symbol !== null)&& (this.symbol.stringValue == SymbolsCodes.leftParenthesis)){
               return  new UnaryMinus (unary_minus, this.scanMultiplier());
@@ -158,17 +181,26 @@ export class SyntaxAnalyzer {
           
         }  
 
-    WritingNumber () {
-        let integerConstant: SymbolBase | null = this.symbol;
+    WritingNumberVariables  () {
+        let char: SymbolBase | null = this.symbol;
+        
+       
+         if (this.symbol.stringValue == SymbolsCodes.integerConst){
+          
+             this.accept(this.symbol.symbolCode); 
+            
+             return new NumberConstant(char);  
+        
+        } else{
 
-        this.accept(SymbolsCodes.integerConst); // проверим, что текущий символ это именно константа, а не что-то еще
+          
+            this.accept(this.symbol.symbolCode); 
+            return new Variables(char);
+        }
+        
+   }
 
-        return new NumberConstant(integerConstant);
-
-    }
-
-
-
+   
     parenthesesExpression(){
      let  multiplier: TreeNodeBase;
 
@@ -199,13 +231,12 @@ export class SyntaxAnalyzer {
        } else if ((this.symbol !== null)&&(this.symbol.stringValue ==  SymbolsCodes.leftParenthesis) ) {
         
            
-             return  this.parenthesesExpression()
+             return  this.parenthesesExpression();
          
-           
-      
-        } else { 
+              
+      }    else { 
 
-        return this.WritingNumber();
+        return this.WritingNumberVariables();
        }
 
        

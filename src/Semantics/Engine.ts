@@ -6,12 +6,15 @@ import { NumberConstant } from '../SyntaxAnalyzer/Tree/NumberConstant';
 import { NumberVariable } from './Variables/NumberVariable';
 import { TreeNodeBase } from '../SyntaxAnalyzer/Tree/TreeNodeBase';
 import { UnaryMinus } from '../SyntaxAnalyzer/Tree/UnaryMinus';
+import { Variables } from '../SyntaxAnalyzer/Tree/Variables';
+import { VariableExpression} from '../SyntaxAnalyzer/Tree/VariableExpression';
 import { ParenthesesExpression } from '../SyntaxAnalyzer/Tree/ParenthesesExpression';
 
 export class Engine {
     /**
      * Результаты вычислений (изначально - один для каждой строки)
      */
+    Variabl = {};
     results: number[];
 
     /**
@@ -20,15 +23,19 @@ export class Engine {
      * лежит какой-то узел, описывающий по сути "последнюю" по вложенности операцию
      */
     trees: TreeNodeBase[];
+    
+   
 
     constructor(trees: TreeNodeBase[]) {
         this.trees = trees;
         this.results = [];
+        
     }
 
     run() {
         let self = this;
 
+        
         this.trees.forEach(
 
             function (tree) {
@@ -54,10 +61,16 @@ export class Engine {
             } else if (expression instanceof Subtraction) {
                 result = leftOperand.value - rightOperand.value;
             }
-
+           
             return new NumberVariable(result as number);
-        } 
+            
+        } if  (expression instanceof VariableExpression){
 
+              this.Variabl [expression.left.symbol.value] = this.evaluateSimpleExpression(expression.right);
+              let result =  this.Variabl [expression.left.symbol.value] ;
+              
+              return new NumberVariable(result.value);
+        }
          else {
             return this.evaluateTerm(expression);
         }
@@ -96,8 +109,21 @@ export class Engine {
           let   OneOperator = this.evaluateMultiplier (expression.right);
           let   result = -OneOperator.value; 
             return new NumberVariable (result);
-      }     
-        
+      } else if (expression instanceof Variables) {
+
+              let result =  this.Variabl [expression.symbol.value] ;
+
+              if (result !== undefined){
+                                 
+                 return new NumberVariable(result.value);
+              }       
+                else
+             { 
+                throw `The variable ${ this.Variabl [expression.symbol.value] } is not initialized.`;
+             }      
+
+
+      }              
         else
           if (expression instanceof NumberConstant) {
             return new NumberVariable(expression.symbol.value);
