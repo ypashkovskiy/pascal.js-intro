@@ -119,7 +119,7 @@ export class Engine {
               }       
                 else
              { 
-                throw `The variable ${ this.Variabl [expression.symbol.value] } is not initialized.`;
+                throw `The variable ${expression.symbol.value } is not initialized.`;
              }      
 
 

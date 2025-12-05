@@ -102,18 +102,14 @@ export class SyntaxAnalyzer {
         while (this.symbol !== null && (
             this.symbol.symbolCode === SymbolsCodes.Equals )) {
 
-             const variableSymbolsRegExp = /\w/i; 
-
-              let result = this.lexicalAnalyzer.fileIO.lastCh();
-
-             if ((variableSymbolsRegExp.exec(result[1])!== null)&&((result[2]==" ")||(result[2]=="\n")||(result[2]=="="))){ 
+            if (term.symbol.symbolCode==SymbolsCodes.identifier){ 
 
                 operationSymbol = this.symbol;
                 this.nextSym();
                 let secondExpression: TreeNodeBase = this.scanExpression();
                 term = new VariableExpression (operationSymbol, term, secondExpression);
              } else
-                this.accept(SymbolsCodes.endOfLine);
+                this.accept(SymbolsCodes.star);
        }
 
         return term;
